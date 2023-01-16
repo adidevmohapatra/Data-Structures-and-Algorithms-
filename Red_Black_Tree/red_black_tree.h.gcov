@@ -1,0 +1,474 @@
+        -:    0:Source:./red_black_tree.h
+        -:    0:Graph:red_black_tree_tests.gcno
+        -:    0:Data:red_black_tree_tests.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:////////Opening Comment: Purpose of the .h file is to implment functions for the rbt tree
+        -:    2:////////like remove, insert, etc. and test it in the .cpp file
+        -:    3:
+        -:    4:
+        -:    5:#ifndef RED_BLACK_TREE_H
+        -:    6:#define RED_BLACK_TREE_H
+        -:    7:
+        -:    8:#include <cstddef>
+        -:    9:#include <utility>
+        -:   10:#include <iostream>
+        -:   11:
+        -:   12:
+        -:   13:
+        -:   14:template <typename Comparable>
+        -:   15:class RedBlackTree {
+        -:   16:
+        -:   17:private:
+        -:   18:	struct Node {
+        -:   19:        Comparable value;
+        -:   20:        Node *left=nullptr;
+        -:   21:        Node *right=nullptr;
+        -:   22:        Node *parent = nullptr;
+        -:   23:        int color= RED;
+        -:   24:
+        -:   25:        Node(const Comparable & theElement, Node *lt, Node *rt, Node* par, int c): value(theElement), left(lt), right(rt), parent(par), color(RED){}
+       32:   26:		Node(): left(nullptr),right(nullptr), parent(nullptr), color(RED){}
+        -:   27:    };
+        3:   28:    Node *root=nullptr;
+        -:   29:
+        -:   30:public:
+        -:   31:	enum Color{RED, BLACK};
+        -:   32:    //-------------------------------------------------------
+        -:   33:    // Name:default 
+        -:   34:    // PreCondition: gets all the default values to use and implement later on in the class
+        -:   35:    // PostCondition: sets everything to initial value and sets it for later use.
+        -:   36:    //---------------------------------------------------------
+        6:   37:    RedBlackTree(){
+        3:   38:        root=nullptr;
+        -:   39:       
+        6:   40:    }
+        -:   41:    //-------------------------------------------------------
+        -:   42:    // Name:copy constructor 
+        -:   43:    // PreCondition: copy the elements of the root
+        -:   44:    // PostCondition: elements are copied from the root
+        -:   45:    //---------------------------------------------------------
+        -:   46:	RedBlackTree(const RedBlackTree& other){
+        -:   47:        if (other.root==nullptr){
+        -:   48:            return;
+        -:   49:        }
+        -:   50:        copy_root(root, other.root);
+        -:   51:
+        -:   52:    }
+        -:   53:    //-------------------------------------------------------
+        -:   54:    // Name:destructer 
+        -:   55:    // PreCondition: objective is to take the roots and remove all elements 
+        -:   56:    // PostCondition: elements are all removed from the rbt
+        -:   57:    //---------------------------------------------------------
+        6:   58:	~RedBlackTree(){
+        3:   59:        destroy_destructor(root);
+        6:   60:    }
+        -:   61:    //-------------------------------------------------------
+        -:   62:    // Name:operator overload
+        -:   63:    // PreCondition: make a deep copy 
+        -:   64:    // PostCondition: returns a deep copy of the roots
+        -:   65:    //---------------------------------------------------------
+        1:   66:	RedBlackTree& operator=(const RedBlackTree& other){
+        -:   67:        
+        1:   68:        if (this==&other){
+    #####:   69:            return *this;
+        -:   70:        }
+        1:   71:        if(root!=nullptr){
+        1:   72:            destroy_destructor(root);
+        1:   73:        }
+        -:   74:    
+        1:   75:        root=other.root;
+        1:   76:        copy_root(root, other.root);
+        -:   77:        
+        1:   78:        return *this;
+        -:   79:
+        1:   80:    }
+        -:   81:    //-------------------------------------------------------
+        -:   82:    // Name:copy_root
+        -:   83:    // PreCondition: make a copy of the root for the rule of three
+        -:   84:    // PostCondition: does make a copy that is recursivly called from both
+        -:   85:    //---------------------------------------------------------
+        5:   86:    void copy_root(Node*& upper, Node *p){
+        5:   87:        if(p==nullptr){
+    #####:   88:            return;
+        -:   89:        }
+        5:   90:        upper= new Node();
+        5:   91:        upper->value=p->value;  
+        5:   92:        upper->parent=p->parent;
+        5:   93:        upper->color=p->color;
+        -:   94:
+        5:   95:        if(p->left!=nullptr){
+        1:   96:            copy_root(upper->left,p->left);
+        1:   97:        }
+        5:   98:        if(p->right!=nullptr){
+        3:   99:            copy_root(upper->right,p->right);
+        3:  100:        }
+        5:  101:    }
+        -:  102:    //-------------------------------------------------------
+        -:  103:    // Name:destroy_destructor
+        -:  104:    // PreCondition: make a deletion of the root for the empty functions
+        -:  105:    // PostCondition: does make a deletion that is recursivly called for them
+        -:  106:    //---------------------------------------------------------
+       36:  107:    void destroy_destructor(Node *p){
+       36:  108:        if (p==nullptr){
+       20:  109:            return;
+        -:  110:        }
+       16:  111:        if( p!=nullptr){
+       16:  112:        destroy_destructor( p -> left);
+       16:  113:        destroy_destructor( p -> right);  
+       16:  114:        delete p;
+       16:  115:        }
+       16:  116:        return;
+       36:  117:    }
+        -:  118:    //-------------------------------------------------------
+        -:  119:    // Name:contains
+        -:  120:    // PreCondition: gives a contain value
+        -:  121:    // PostCondition: returns a contain value from contain_helper
+        -:  122:    //---------------------------------------------------------
+        2:  123:	bool contains(const Comparable& value) const{
+        2:  124:        return contain_helper(root, value);
+        -:  125:    }
+        -:  126:    //-------------------------------------------------------
+        -:  127:    // Name:contain_helper
+        -:  128:    // PreCondition: make a boolean to see if there or not
+        -:  129:    // PostCondition: does make a contain that is recursivly called from contains
+        -:  130:    //---------------------------------------------------------
+        5:  131:    bool contain_helper(Node *x, const Comparable& item )const{
+        5:  132:        if(x==nullptr){
+        1:  133:            return false;
+        -:  134:        }
+        4:  135:        if(x->value==item){
+        1:  136:            return true;
+        -:  137:        }
+        3:  138:        else if(x->value>item){
+        2:  139:            return contain_helper(x->left,item);
+        -:  140:        }
+        1:  141:        else if(x->value<item){
+        1:  142:            return contain_helper(x->right,item);
+        -:  143:        }
+    #####:  144:        return false;
+        5:  145:    }
+        -:  146:
+        -:  147:
+        -:  148:
+        -:  149:    //-------------------------------------------------------
+        -:  150:    // Name:insert
+        -:  151:    // PreCondition: gives an insert value
+        -:  152:    // PostCondition: returns an insert value from insert_helper
+        -:  153:    //---------------------------------------------------------
+       11:  154:	void insert(const Comparable& x){
+        -:  155:
+       11:  156:        Node* temp = root;
+       11:  157:		Node* parentNode = nullptr;
+       26:  158:		while (temp != nullptr) {
+       15:  159:            if (x != temp->value){
+       15:  160:                parentNode = temp;
+        -:  161:
+       15:  162:                if (x < temp->value) {
+        8:  163:                    temp = temp->left;
+        8:  164:                } 
+        -:  165:                else {
+        7:  166:                    temp = temp->right;
+        -:  167:                }
+       15:  168:            }
+    #####:  169:            else if (x == temp->value) {
+    #####:  170:				return;
+        -:  171:			}
+        -:  172:		}
+       11:  173:		Node* node = new Node();
+       11:  174:		node->value = x;
+       11:  175:		node->color = BLACK;
+       11:  176:		node->parent = parentNode;
+        -:  177:
+       11:  178:		if (parentNode==nullptr){
+        2:  179:            root = node;
+        2:  180:        }
+        -:  181:        else{
+        9:  182:			if (x > parentNode->value) {
+        5:  183:				parentNode->right = node;
+        5:  184:			}
+        4:  185:			else if(x < parentNode->value) {
+        4:  186:				parentNode->left = node;
+        4:  187:			}
+        -:  188:		}
+       11:  189:		insertHelper(node);
+       11:  190:		return;
+        -:  191:       
+       11:  192:    }
+        -:  193:    //-------------------------------------------------------
+        -:  194:    // Name:insert_helper
+        -:  195:    // PreCondition: make a function to insert anywhere
+        -:  196:    // PostCondition: does make a contain that is recursivly called from insert
+        -:  197:    //---------------------------------------------------------
+       11:  198:    void insertHelper(Node*& value){
+        -:  199:
+       11:  200:        Node* grand=nullptr;
+       11:  201:        Node* par2=nullptr;
+       11:  202:        while (value != root && value->parent->color == RED) { 
+    #####:  203:            grand=value->parent->parent;
+    #####:  204:            par2=value->parent;
+    #####:  205:            if(par2 != grand->left){
+    #####:  206:                Node* temp = grand->left;
+    #####:  207:                if(temp == nullptr && temp->color != RED){
+    #####:  208:                    if (value == par2->left) {
+    #####:  209:                        value = par2;
+    #####:  210:                        rotateright(value);
+    #####:  211:                    }
+    #####:  212:                    par2->color = BLACK;
+    #####:  213:                    grand->color = RED;
+    #####:  214:                    rotateleft(grand);
+    #####:  215:                }
+    #####:  216:                else if (temp != nullptr && temp->color == RED) {
+    #####:  217:                    par2->color = BLACK;
+    #####:  218:                    temp->color = BLACK;
+    #####:  219:                    grand->color = RED;
+    #####:  220:                    value = grand;
+    #####:  221:                }
+    #####:  222:            }
+    #####:  223:            else if (par2 == grand->left) {
+    #####:  224:                Node* temp = grand->right;
+    #####:  225:                if(temp == nullptr && temp->color != RED){  
+    #####:  226:                    if (value == par2->right) {
+    #####:  227:                        value = par2;
+    #####:  228:                        rotateleft(value);
+    #####:  229:                    }
+    #####:  230:                par2->color = BLACK;
+    #####:  231:                grand->color = RED;
+    #####:  232:                rotateright(grand);
+    #####:  233:                }
+    #####:  234:                else if (temp != nullptr && temp->color == RED) {
+    #####:  235:                    par2->color = BLACK;
+    #####:  236:                    temp->color = BLACK;
+    #####:  237:                    grand->color = RED;
+    #####:  238:                    value = grand;
+    #####:  239:                }
+    #####:  240:            }
+        -:  241:        }
+       11:  242:        root->color = BLACK;
+       11:  243:        return;
+        -:  244:   }
+        -:  245:   //-------------------------------------------------------
+        -:  246:   // Name: rotateleft
+        -:  247:   // PreCondition: to balance the rotation must be done for left side
+        -:  248:   // PostCondition: does make the rotation by switching around for left side
+        -:  249:   //---------------------------------------------------------
+    #####:  250:   void rotateleft(Node* node_two) {
+    #####:  251:        Node *node_one = node_two->right;
+    #####:  252:        node_two->right = node_one->left;
+        -:  253:
+    #####:  254:        if (node_two != nullptr) {
+    #####:  255:            node_two->parent = node_one;
+    #####:  256:        }
+    #####:  257:        if (node_one != nullptr) {
+    #####:  258:            node_one->parent = node_two->parent;
+    #####:  259:        }
+    #####:  260:        if (node_one->left != nullptr) {
+    #####:  261:            node_one->left->parent = node_two;
+    #####:  262:        }
+    #####:  263:        if (node_two->parent) {
+    #####:  264:            if (node_two != node_two->parent->left){
+    #####:  265:                node_two->parent->right = node_one;
+    #####:  266:            }
+    #####:  267:            else if (node_two == node_two->parent->left) {
+    #####:  268:                node_two->parent->left = node_one;
+    #####:  269:            }
+    #####:  270:        }
+        -:  271:        else {
+    #####:  272:            root = node_one;
+        -:  273:        }
+    #####:  274:        node_one->left = node_two;
+    #####:  275:    }
+        -:  276:    //-------------------------------------------------------
+        -:  277:    // Name: rotateright
+        -:  278:    // PreCondition: to balance the rotation must be done for right side
+        -:  279:    // PostCondition: does make the rotation by switching around for right side
+        -:  280:    //---------------------------------------------------------
+        -:  281:   
+    #####:  282:	void rotateright(Node* node_one){
+    #####:  283:        Node *node_two = node_one->left;
+    #####:  284:        node_one->left = node_two->right;
+        -:  285:       
+    #####:  286:        if (node_one != nullptr) {
+    #####:  287:            node_one->parent = node_two;
+    #####:  288:        }
+    #####:  289:        if (node_two != nullptr){
+    #####:  290:            node_two->parent = node_one->parent;
+    #####:  291:        }
+    #####:  292:        if (node_two->right != nullptr) {
+    #####:  293:            node_two->right->parent = node_one;
+    #####:  294:        }
+    #####:  295:        if (node_one->parent) {
+    #####:  296:            if (node_one != node_one->parent->right){
+    #####:  297:                node_one->parent->left = node_two;
+    #####:  298:            }
+    #####:  299:            else if (node_one == node_one->parent->right) {
+    #####:  300:                node_one->parent->right = node_two;
+    #####:  301:            }
+    #####:  302:        }
+        -:  303:        else{
+    #####:  304:            root = node_two;
+        -:  305:        }
+    #####:  306:        node_two->right = node_one;
+    #####:  307:	}
+        -:  308:
+        -:  309:
+        -:  310:
+        -:  311:
+        -:  312:
+        -:  313:    //-------------------------------------------------------
+        -:  314:    // Name:remove
+        -:  315:    // PreCondition: gives a remove value
+        -:  316:    // PostCondition: returns a remove value from remove_helper
+        -:  317:    //---------------------------------------------------------
+        1:  318:	void remove(const Comparable& value){
+        -:  319:    //    remove_helper(root, value);
+        1:  320:    }
+        -:  321:    //-------------------------------------------------------
+        -:  322:    // Name:remove_helper
+        -:  323:    // PreCondition: make a function to remove anywhere
+        -:  324:    // PostCondition: does make a contain that is recursivly called from remove
+        -:  325:    //---------------------------------------------------------
+        -:  326:    ////////////////attempt at remove
+        -:  327:    // void remove_helper(RedBlackTree*& x, const Comparable& item ) {
+        -:  328:    //     if (x == nullptr) {
+        -:  329:    //         return;
+        -:  330:    //     }
+        -:  331:    //     if (item < x->value) {
+        -:  332:    //         remove_helper(x->left, item);
+        -:  333:    //     }
+        -:  334:    //     else if (item > x->value) {
+        -:  335:    //         remove_helper(x->right, item);
+        -:  336:    //     }
+        -:  337:    //     else if (x->left != nullptr && x->right != nullptr) {
+        -:  338:    //         x->value = node_min(x->right)->value;
+        -:  339:    //         remove_helper(x->rightchildptr,x->node_obj);
+        -:  340:    //     }
+        -:  341:    //     else {
+        -:  342:    //         RedBlackTree* temp = x;   
+        -:  343:    //         if (x->left == nullptr) {
+        -:  344:    //             x = x->rightchildptr;
+        -:  345:    //         }
+        -:  346:    //         else if(x->left != nullptr) {
+        -:  347:    //             x = x->left;
+        -:  348:    //         }
+        -:  349:    //         delete temp;
+        -:  350:    //     }      
+        -:  351:    // }
+        -:  352:
+        -:  353:    // Node* node_min(Node* p) {
+        -:  354:    //     Node* current = p;
+        -:  355:    //     while (current!= nullptr && current->left!= nullptr) {
+        -:  356:    //         current = current->left;
+        -:  357:    //     }
+        -:  358:    //     return current;
+        -:  359:    // }
+        -:  360:
+        -:  361:    //-------------------------------------------------------
+        -:  362:    // Name:find_min
+        -:  363:    // PreCondition: gives a minimum value
+        -:  364:    // PostCondition: returns a minimum value
+        -:  365:    //---------------------------------------------------------
+        2:  366:	const Comparable& find_min() const{
+        2:  367:        if(root==nullptr){    
+        1:  368:            throw std::invalid_argument("Empty Tree");
+        -:  369:        }
+        1:  370:        Node*newNode=root;
+        4:  371:        while (newNode->left!=nullptr){
+        3:  372:            newNode=newNode->left;
+        -:  373:        }
+        1:  374:        return newNode->value;
+    #####:  375:    }
+        -:  376:    //-------------------------------------------------------
+        -:  377:    // Name:find_max
+        -:  378:    // PreCondition: gives a maximum value
+        -:  379:    // PostCondition: returns a maximum value
+        -:  380:    //---------------------------------------------------------
+        2:  381:	const Comparable& find_max() const{
+        2:  382:        if(root==nullptr){    
+        1:  383:            throw std::invalid_argument("Empty Tree");
+        -:  384:        }
+        1:  385:        Node*newNode=root;
+        3:  386:        while (newNode->right!=nullptr){
+        2:  387:            newNode=newNode->right;
+        -:  388:        }
+        1:  389:        return newNode->value;
+    #####:  390:    }
+        -:  391:    //-------------------------------------------------------
+        -:  392:    // Name:print_tree
+        -:  393:    // PreCondition: gives the tree image
+        -:  394:    // PostCondition: returns the tree image
+        -:  395:    //---------------------------------------------------------
+        3:  396:	void print_tree(std::ostream& os=std::cout){
+        3:  397:        if (root==nullptr){
+    #####:  398:            os<< "<empty>\n";
+    #####:  399:        }
+        -:  400:        else{
+        3:  401:            print_helper(root,0, os);
+        -:  402:        }
+        3:  403:    }
+        -:  404:    //-------------------------------------------------------
+        -:  405:    // Name:print_helper
+        -:  406:    // PreCondition: make a function to print tree
+        -:  407:    // PostCondition: does make a contain that is recursivly called from print
+        -:  408:    //---------------------------------------------------------
+       37:  409:    void print_helper(Node* t,size_t spaces, std::ostream& os=std::cout) const{
+       37:  410:        if (t == nullptr) {
+       20:  411:            return;
+        -:  412:        }
+        -:  413:
+       17:  414:        print_helper(t->right,spaces+2,os);
+       65:  415:        for (size_t i=0;i<spaces;++i){
+       48:  416:            os<<" ";
+       48:  417:        }
+       17:  418:        if (t->color == RED) {
+    #####:  419:            os <<"R:";
+    #####:  420:        }
+       17:  421:        os << t->value << std::endl;
+       17:  422:        print_helper(t->left,spaces+2,os);
+       37:  423:    }
+        -:  424:    //-------------------------------------------------------
+        -:  425:    // Name:is_empty
+        -:  426:    // PreCondition: checks if/if not empty
+        -:  427:    // PostCondition: returns if/if not empty
+        -:  428:    //---------------------------------------------------------
+        -:  429:	bool is_empty() const{
+        -:  430:        if (root==nullptr){
+        -:  431:            return true;
+        -:  432:        }
+        -:  433:        return false;
+        -:  434:    }
+        -:  435:    //-------------------------------------------------------
+        -:  436:    // Name:make_empty
+        -:  437:    // PreCondition: makes if/if not empty
+        -:  438:    // PostCondition: does empty the root from destroy_destructor
+        -:  439:    //---------------------------------------------------------
+        -:  440:	void make_empty(){
+        -:  441:        destroy_destructor(root);
+        -:  442:        root=nullptr;
+        -:  443:    }
+        -:  444:
+        -:  445:	// FOR TESTING ONLY - do not use these in your implementation
+        -:  446:    //-------------------------------------------------------
+        -:  447:    // Name:color
+        -:  448:    // PreCondition: makes black in a scenario the node is nullptr
+        -:  449:    // PostCondition: returns a default color value from enum
+        -:  450:    //---------------------------------------------------------
+        -:  451:    int color(const Node* node) const{
+        -:  452:		if(node == nullptr)
+        -:  453:			return BLACK;
+        -:  454:		return node->color;
+        -:  455:	}
+        -:  456:    //-------------------------------------------------------
+        -:  457:    // Name:get_root
+        -:  458:    // PreCondition: get the root value or none
+        -:  459:    // PostCondition: return the root value or null
+        -:  460:    //---------------------------------------------------------
+        2:  461:	const Node* get_root() const{
+        2:  462:        if(root == nullptr)
+    #####:  463:			return nullptr;
+        2:  464:		return root;
+        2:  465:    }
+        -:  466:
+        -:  467:};
+        -:  468:
+        -:  469:#endif  // RED_BLACK_TREE_H

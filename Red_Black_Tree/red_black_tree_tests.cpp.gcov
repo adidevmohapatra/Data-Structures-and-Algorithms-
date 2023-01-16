@@ -1,0 +1,106 @@
+        -:    0:Source:red_black_tree_tests.cpp
+        -:    0:Graph:red_black_tree_tests.gcno
+        -:    0:Data:red_black_tree_tests.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:////////Opening Comment: Purpose of the .cpp file is to test cases for the rbt tree
+        -:    2:////////that was implemented in the .h file by conducting various tests.
+        -:    3:
+        -:    4:
+        -:    5:#include <iostream>
+        -:    6:#include <sstream>
+        -:    7:#include "red_black_tree.h"
+        -:    8:
+        -:    9:using std::cout; 
+        -:   10:using std::endl;
+        -:   11:
+        1:   12:int main() {
+        -:   13:    // example test case given in lab assignment
+        -:   14:    // make an empty tree
+        1:   15:    RedBlackTree<int> tree;
+        -:   16:
+        -:   17:    // insert 5 values into the tree
+        1:   18:    std::cout << "insert 6, 4, 2, 8, 10, -2 " << std::endl;
+        -:   19:
+        -:   20:
+        1:   21:    tree.insert(6);
+        -:   22:  
+        1:   23:    tree.insert(4);
+        -:   24:  
+        1:   25:    tree.insert(2);
+        -:   26:   
+        1:   27:    tree.insert(8);
+        -:   28: 
+        1:   29:    tree.insert(10);
+        -:   30:
+        1:   31:    tree.insert(-2);
+        -:   32:
+        1:   33:    tree.get_root();
+        -:   34:
+        -:   35:    // // print the tree
+        -:   36:    // std::cout << "tree: " << std::endl;
+        -:   37:    {
+        1:   38:    std::ostringstream ss;
+        1:   39:    tree.print_tree(ss);  
+        1:   40:    std::cout << ss.str() << std::endl;
+        1:   41:    }
+        -:   42:
+        1:   43:    std::cout << "contains 4? " << std::boolalpha <<tree.contains(4) << std::endl;
+        1:   44:    std::cout << "contains 7? " << std::boolalpha << tree.contains(7) << std::endl;
+        -:   45:
+        -:   46:    // // remove the root
+        1:   47:    std::cout << "remove 4" << std::endl;
+        1:   48:    tree.remove(4);
+        -:   49:
+        -:   50:    // find the minimum element
+        1:   51:    std::cout << "min: " << tree.find_min() << std::endl;
+        -:   52:
+        -:   53:    // find the maximum element
+        1:   54:    std::cout << "max: " << tree.find_max() << std::endl;
+        -:   55:
+        -:   56:    // print the tree
+        1:   57:    std::cout << "tree: " << std::endl;
+        -:   58:    {
+        1:   59:    std::ostringstream ss;
+        1:   60:    tree.print_tree(ss);
+        1:   61:    std::cout << ss.str() << std::endl;
+        1:   62:    }
+        -:   63:
+        -:   64:
+        1:   65:    RedBlackTree<int> tree1;
+        -:   66:
+        -:   67:    try{
+        1:   68:            tree1.find_min();
+        1:   69:        }
+        1:   70:        catch(std::invalid_argument){
+        1:   71:            cout<<"First Catch"<<endl;
+        1:   72:        }
+        -:   73:
+        -:   74:    try{
+        1:   75:            tree1.find_max();
+        1:   76:        }
+        1:   77:        catch(std::invalid_argument){
+        1:   78:            cout<<"Second Catch"<<endl;
+        1:   79:        }
+        -:   80:    
+        1:   81:    RedBlackTree<int> tree2;
+        -:   82:
+        1:   83:    tree2.insert(5);
+        1:   84:    tree2.insert(1);
+        1:   85:    tree2.insert(2);
+        1:   86:    tree2.insert(6);
+        1:   87:    tree2.insert(8);
+        -:   88:
+        1:   89:    tree2.get_root();
+        -:   90:    
+        1:   91:    std::ostringstream ss;
+        1:   92:    tree2.print_tree(ss);
+        1:   93:    std::cout << ss.str() << std::endl;
+        -:   94:
+        1:   95:    tree=tree2;
+        -:   96:
+        -:   97:   
+        -:   98:
+        -:   99:
+        1:  100:    return 0;
+        3:  101:}
